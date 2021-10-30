@@ -1,0 +1,4 @@
+name: dumhub
+runtime: nodejs
+description: Dumhub
+main: src/

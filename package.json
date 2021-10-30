@@ -1,0 +1,12 @@
+{
+    "name": "cardano-stake-pool",
+    "devDependencies": {
+        "@types/node": "^10.0.0"
+    },
+    "dependencies": {
+        "@pulumi/digitalocean": "^4.0.0",
+        "@pulumi/docker": "^3.1.0",
+        "@pulumi/kubernetes": "^3.8.3",
+        "@pulumi/pulumi": "^3.0.0"
+    }
+}
