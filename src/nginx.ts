@@ -2,21 +2,16 @@ import * as digitalocean from '@pulumi/digitalocean';
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
 import { provider } from './cluster';
+import { servicesNamespace } from './services-namespace';
 
 // Enable some configurable parameters.
 const config = new pulumi.Config('k8s');
 const domainName = config.get('domain');
 
-export const nginxIngressNamespace = new k8s.core.v1.Namespace(
-  'nginx-ingress',
-  undefined,
-  { provider }
-);
-
 export const nginx = new k8s.helm.v3.Chart(
   'nginx-ingress',
   {
-    // namespace: nginxIngressNamespace.metadata.name,
+    namespace: servicesNamespace.metadata.name,
     chart: 'ingress-nginx',
     version: '3.9.0',
     fetchOpts: { repo: 'https://kubernetes.github.io/ingress-nginx' },
@@ -57,7 +52,7 @@ if (domainName) {
     }
   );
 
-  const subdomains = ['www', 'matrix'];
+  const subdomains = ['www', 'matrix', 'auth'];
   subdomains.map((name) => {
     new digitalocean.DnsRecord(`do-${name}-cname`, {
       domain: domain.name,

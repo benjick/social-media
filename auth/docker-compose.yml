@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:11
+    restart: 'no'
+    ports:
+      - 5432:5432
+    #    volumes:
+    #      - my_dbdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: supertokens
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql
+    ports:
+      - 3567:3567
+    environment:
+      POSTGRESQL_CONNECTION_URI: postgresql://postgres:postgres@db/supertokens

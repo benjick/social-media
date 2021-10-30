@@ -1,7 +1,7 @@
 import * as k8s from '@pulumi/kubernetes';
 import { provider } from './cluster';
 import {
-  volumeMount as homeserverVolumeMount,
+  volumeMounts as homeserverVolumeMounts,
   volume as homeserverVolume,
 } from './homeserver';
 
@@ -66,7 +66,7 @@ const app = new k8s.apps.v1.Deployment(
                 },
               ],
               volumeMounts: [
-                homeserverVolumeMount,
+                ...homeserverVolumeMounts,
                 {
                   name: 'data',
                   mountPath: '/data',
@@ -90,7 +90,7 @@ const app = new k8s.apps.v1.Deployment(
   { provider }
 );
 
-const server = new k8s.core.v1.Service(
+const service = new k8s.core.v1.Service(
   'synapse',
   {
     spec: {
@@ -129,9 +129,9 @@ const ingress = new k8s.networking.v1.Ingress(
                 path: '/',
                 backend: {
                   service: {
-                    name: server.metadata.name,
+                    name: service.metadata.name,
                     port: {
-                      number: server.spec.ports[0].port,
+                      number: service.spec.ports[0].port,
                     },
                   },
                 },
