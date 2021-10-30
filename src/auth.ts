@@ -3,7 +3,7 @@ import * as docker from '@pulumi/docker';
 import * as pulumi from '@pulumi/pulumi';
 import { registryCredentials, imagePullSecrets, registry } from './registry';
 import { provider } from './cluster';
-import { connectionUri } from './supertokens';
+import { connectionUri } from './vendor/supertokens';
 
 const appName = 'collo-auth';
 const appLabels = { app: appName };

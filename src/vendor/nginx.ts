@@ -1,8 +1,8 @@
 import * as digitalocean from '@pulumi/digitalocean';
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
-import { provider } from './cluster';
-import { servicesNamespace } from './services-namespace';
+import { provider } from '../cluster';
+import { servicesNamespace } from '../services-namespace';
 
 // Enable some configurable parameters.
 const config = new pulumi.Config('k8s');

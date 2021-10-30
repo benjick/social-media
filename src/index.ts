@@ -4,8 +4,8 @@ import * as pulumi from '@pulumi/pulumi';
 import * as digitalocean from '@pulumi/digitalocean';
 import { region } from './config';
 import { kubeconfig } from './cluster';
-import './nginx';
-import './cert-manager';
+import './vendor/nginx';
+import './vendor/cert-manager';
 import './synapse';
 import './auth';
 

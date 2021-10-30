@@ -1,35 +1,12 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as k8s from '@pulumi/kubernetes';
-import { ClusterIssuer } from './helpers/ClusterIssuer';
-import { provider } from './cluster';
-import { servicesNamespace } from './services-namespace';
+import { ClusterIssuer } from '../helpers/ClusterIssuer';
+import { provider } from '../cluster';
+import { servicesNamespace } from '../services-namespace';
 
 const config = new pulumi.Config('do');
 const token = config.requireSecret('token');
 const email = config.requireSecret('email');
-
-// https://github.com/jetstack/cert-manager/issues/2602#issuecomment-739971813
-// const certManagerCRDS = new k8s.yaml.ConfigFile(
-//   'cert-manager-crds',
-//   {
-//     file: './cert-manager.crds.yaml',
-//     transformations: [
-//       // Add service namespace
-//       (o: any) => {
-//         if (o !== undefined) {
-//           if (o.metadata !== undefined) {
-//             o.metadata.namespace = servicesNamespace.metadata.namespace;
-//           } else {
-//             o.metadata = { namespace: servicesNamespace.metadata.namespace };
-//           }
-//         }
-//       },
-//     ],
-//   },
-//   {
-//     provider,
-//   }
-// );
 
 export const certManagerChart = new k8s.helm.v3.Chart(
   'cert-manager',
