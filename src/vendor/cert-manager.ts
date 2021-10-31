@@ -14,7 +14,6 @@ export const certManagerChart = new k8s.helm.v3.Chart(
     chart: 'cert-manager',
     version: 'v1.6.0',
     namespace: servicesNamespace.metadata.name,
-    // https://github.com/jetstack/cert-manager/issues/2602#issuecomment-739971813
     values: {
       installCRDs: true,
     },
@@ -24,7 +23,6 @@ export const certManagerChart = new k8s.helm.v3.Chart(
   },
   {
     provider,
-    // dependsOn: certManagerCRDS,
   }
 );
 

@@ -1,7 +1,9 @@
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
-import { postgresUri } from '../postgres';
+import { createPostgresDb } from '../postgres';
 import { provider } from '../cluster';
+
+const { uri } = createPostgresDb('supertoken');
 
 const appName = 'supertokens';
 const appLabels = { app: appName };
@@ -9,11 +11,8 @@ const appLabels = { app: appName };
 const secrets = new k8s.core.v1.Secret(
   appName,
   {
-    // metadata: {
-    //   namespace: namespace.metadata.name,
-    // },
     stringData: {
-      'postgres-uri': postgresUri,
+      'postgres-uri': uri,
     },
   },
   {
@@ -25,7 +24,6 @@ const app = new k8s.apps.v1.Deployment(
   'supertokens',
   {
     metadata: {
-      // namespace: namespace.metadata.name,
       labels: appLabels,
     },
     spec: {
@@ -64,7 +62,6 @@ export const service = new k8s.core.v1.Service(
   {
     metadata: {
       labels: app.spec.template.metadata.labels,
-      // namespace: namespace.metadata.name,
     },
     spec: {
       type: 'NodePort',

@@ -99,6 +99,13 @@
     shell-quote "^1.6.1"
     tmp "^0.0.33"
 
+"@pulumi/postgresql@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/postgresql/-/postgresql-3.2.0.tgz#8bd888bc1c59b87211e918c773fccef901173b0d"
+  integrity sha512-pdAzGCwZkepJI5/F8ssHlZWUDr45GNYYYGerqzjxw3XYqjD0aXNLl/jpLcPuvO3bilOBn+Ql4ZdQsrtQzeQyeQ==
+  dependencies:
+    "@pulumi/pulumi" "^3.0.0"
+
 "@pulumi/pulumi@^3.0.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.12.0.tgz#b1726f6780d3a50dee584879f3e26d9a8fd8db63"

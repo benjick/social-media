@@ -2,6 +2,7 @@ import * as pulumi from '@pulumi/pulumi';
 import * as k8s from '@pulumi/kubernetes';
 import * as random from '@pulumi/random';
 import { provider } from './cluster';
+import * as postgresql from '@pulumi/postgresql';
 
 const appLabels = { app: 'postgres' };
 
@@ -15,8 +16,7 @@ const configMap = new k8s.core.v1.ConfigMap(
   'postgres',
   {
     data: {
-      POSTGRES_DB: 'synapse',
-      POSTGRES_USER: 'synapse-db',
+      POSTGRES_USER: 'admin',
       POSTGRES_PASSWORD: password.result,
       POSTGRES_INITDB_ARGS: '--locale=C --encoding=UTF-8',
     },
@@ -59,7 +59,44 @@ const service = new k8s.core.v1.Service(
   { provider }
 );
 
-export const postgresUri = pulumi.interpolate`postgres://postgres:${postgresqlPassword}@${service.metadata.name}:5432/{dbname}`;
+const postgresProvider = new postgresql.Provider('provider', {
+  host: service.metadata.name,
+  username: 'admin',
+  password: postgresqlPassword,
+});
+
+export function createPostgresDb(name: string) {
+  const _name = `postgres-db-${name}`;
+  const opts = {
+    provider: postgresProvider,
+  };
+  const db = new postgresql.Database(name, {}, opts);
+  const password = new random.RandomPassword(_name, {
+    length: 32,
+  });
+  const user = new postgresql.Role(
+    _name,
+    {
+      login: true,
+      password: password.result,
+    },
+    opts
+  );
+  new postgresql.Grant(
+    _name,
+    {
+      database: db.name,
+      objectType: 'table',
+      privileges: ['ALL'],
+      role: user.name,
+      schema: 'public',
+    },
+    opts
+  );
+  const uri = pulumi.interpolate`postgres://${user.name}:${password.result}@${service.metadata.name}:5432/${db.name}`;
+
+  return { uri };
+}
 
 const app = new k8s.apps.v1.StatefulSet(
   'postgres',
