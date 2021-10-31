@@ -26,7 +26,19 @@ const ingress = new k8s.networking.v1.Ingress(
             paths: [
               {
                 pathType: 'Prefix',
-                path: '/.well-known/matrix/',
+                path: '/.well-known/matrix/server',
+                backend: {
+                  service: {
+                    name: delegationService.metadata.name,
+                    port: {
+                      number: delegationService.spec.ports[0].port,
+                    },
+                  },
+                },
+              },
+              {
+                pathType: 'Prefix',
+                path: '/.well-known/matrix/client',
                 backend: {
                   service: {
                     name: delegationService.metadata.name,

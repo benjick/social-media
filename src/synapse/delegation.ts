@@ -72,7 +72,7 @@ export const service = new k8s.core.v1.Service(
   'matrix-delegation',
   {
     spec: {
-      type: 'ClusterIP',
+      type: 'NodePort',
       selector: app.spec.template.metadata.labels,
       ports: [{ port: 8080, targetPort: 80 }],
     },
