@@ -47,40 +47,44 @@ const appService = new k8s.core.v1.Service(
   { provider }
 );
 
-const appIngress = new k8s.networking.v1.Ingress('app', {
-  metadata: {
-    annotations: {
-      'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
-      'kubernetes.io/ingress.class': 'nginx',
-    },
-  },
-  spec: {
-    tls: [
-      {
-        hosts: ['molny.se'],
-        secretName: `test-app-tls`,
+const appIngress = new k8s.networking.v1.Ingress(
+  'app',
+  {
+    metadata: {
+      annotations: {
+        'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
+        'kubernetes.io/ingress.class': 'nginx',
       },
-    ],
-    rules: [
-      {
-        host: 'molny.se',
-        http: {
-          paths: [
-            {
-              pathType: 'Prefix',
-              path: '/',
-              backend: {
-                service: {
-                  name: appService.metadata.name,
-                  port: {
-                    number: appService.spec.ports[0].port,
+    },
+    spec: {
+      tls: [
+        {
+          hosts: ['molny.se'],
+          secretName: `test-app-tls`,
+        },
+      ],
+      rules: [
+        {
+          host: 'molny.se',
+          http: {
+            paths: [
+              {
+                pathType: 'Prefix',
+                path: '/',
+                backend: {
+                  service: {
+                    name: appService.metadata.name,
+                    port: {
+                      number: appService.spec.ports[0].port,
+                    },
                   },
                 },
               },
-            },
-          ],
+            ],
+          },
         },
-      },
-    ],
+      ],
+    },
   },
-});
+  { provider }
+);

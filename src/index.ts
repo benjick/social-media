@@ -8,6 +8,7 @@ import './vendor/nginx';
 import './vendor/cert-manager';
 import './synapse/synapse';
 import './auth';
+import './www';
 
 export { kubeconfig };
 

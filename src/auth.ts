@@ -7,6 +7,7 @@ import { connectionUri } from './vendor/supertokens';
 
 const appName = 'collo-auth';
 const appLabels = { app: appName };
+const url = 'https://molny.se';
 
 const image = new docker.Image(
   appName,
@@ -15,7 +16,8 @@ const image = new docker.Image(
       context: '../auth',
       cacheFrom: true,
       env: {
-        NEXT_PUBLIC_APP_URL: 'https://auth.molny.se',
+        // TODO: Make this work
+        NEXT_PUBLIC_APP_URL: url,
       },
     },
     imageName: pulumi.interpolate`registry.digitalocean.com/${registry.name}/collo-auth`,
@@ -30,7 +32,6 @@ const deployment = new k8s.apps.v1.Deployment(
   appName,
   {
     metadata: {
-      // namespace: namespace.metadata.name,
       labels: appLabels,
     },
     spec: {
@@ -51,7 +52,7 @@ const deployment = new k8s.apps.v1.Deployment(
                 },
                 {
                   name: 'APP_URL',
-                  value: 'https://auth.molny.se',
+                  value: url,
                 },
               ],
             },
@@ -68,7 +69,6 @@ export const service = new k8s.core.v1.Service(
   {
     metadata: {
       labels: deployment.spec.template.metadata.labels,
-      // namespace: namespace.metadata.name,
     },
     spec: {
       type: 'NodePort',
@@ -79,44 +79,44 @@ export const service = new k8s.core.v1.Service(
   { provider }
 );
 
-const ingress = new k8s.networking.v1.Ingress(
-  'auth',
-  {
-    metadata: {
-      annotations: {
-        'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
-        'kubernetes.io/ingress.class': 'nginx',
-      },
-    },
-    spec: {
-      tls: [
-        {
-          hosts: ['auth.molny.se'],
-          secretName: `auth-tls`,
-        },
-      ],
-      rules: [
-        {
-          host: 'auth.molny.se',
-          http: {
-            paths: [
-              {
-                pathType: 'Prefix',
-                path: '/',
-                backend: {
-                  service: {
-                    name: service.metadata.name,
-                    port: {
-                      number: service.spec.ports[0].port,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
-  },
-  { provider }
-);
+// const ingress = new k8s.networking.v1.Ingress(
+//   'auth',
+//   {
+//     metadata: {
+//       annotations: {
+//         'cert-manager.io/cluster-issuer': 'letsencrypt-prod',
+//         'kubernetes.io/ingress.class': 'nginx',
+//       },
+//     },
+//     spec: {
+//       tls: [
+//         {
+//           hosts: ['auth.molny.se'],
+//           secretName: `auth-tls`,
+//         },
+//       ],
+//       rules: [
+//         {
+//           host: 'auth.molny.se',
+//           http: {
+//             paths: [
+//               {
+//                 pathType: 'Prefix',
+//                 path: '/',
+//                 backend: {
+//                   service: {
+//                     name: service.metadata.name,
+//                     port: {
+//                       number: service.spec.ports[0].port,
+//                     },
+//                   },
+//                 },
+//               },
+//             ],
+//           },
+//         },
+//       ],
+//     },
+//   },
+//   { provider }
+// );

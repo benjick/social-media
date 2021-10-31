@@ -5,8 +5,8 @@ import {
   volume as homeserverVolume,
 } from './config';
 
+const image = 'matrixdotorg/synapse:v1.45.1';
 const dirs = ['/data/media_store', '/data/uploads', '/data/logs'];
-
 const args = dirs.map((dir) => `mkdir -p ${dir}; chown 991:991 ${dir};`);
 
 const pvc = new k8s.core.v1.PersistentVolumeClaim(
@@ -58,7 +58,7 @@ const app = new k8s.apps.v1.Deployment(
           containers: [
             {
               name: 'synapse',
-              image: 'matrixdotorg/synapse:v1.45.1',
+              image,
               // image: 'paulbouwer/hello-kubernetes:1.8',
               ports: [
                 {
