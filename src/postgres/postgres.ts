@@ -1,8 +1,11 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as k8s from '@pulumi/kubernetes';
 import * as random from '@pulumi/random';
-import { provider } from './cluster';
-import * as postgresql from '@pulumi/postgresql';
+import { provider } from '../cluster';
+import {
+  volume as multipleVolume,
+  volumeMounts as multipleVolumeMounts,
+} from './multiple-databases';
 
 const appLabels = { app: 'postgres' };
 
@@ -44,7 +47,7 @@ const pvc = new k8s.core.v1.PersistentVolumeClaim(
 
 const serviceName = 'postgres-service';
 
-const service = new k8s.core.v1.Service(
+export const service = new k8s.core.v1.Service(
   'postgres',
   {
     metadata: {
@@ -53,49 +56,14 @@ const service = new k8s.core.v1.Service(
     spec: {
       type: 'ClusterIP',
       selector: appLabels,
-      ports: [{ port: 80, targetPort: 8080 }],
+      ports: [{ port: 5432, targetPort: 5432 }],
     },
   },
   { provider }
 );
 
-const postgresProvider = new postgresql.Provider('provider', {
-  host: service.metadata.name,
-  username: 'admin',
-  password: postgresqlPassword,
-});
-
-export function createPostgresDb(name: string) {
-  const _name = `postgres-db-${name}`;
-  const opts = {
-    provider: postgresProvider,
-  };
-  const db = new postgresql.Database(name, {}, opts);
-  const password = new random.RandomPassword(_name, {
-    length: 32,
-  });
-  const user = new postgresql.Role(
-    _name,
-    {
-      login: true,
-      password: password.result,
-    },
-    opts
-  );
-  new postgresql.Grant(
-    _name,
-    {
-      database: db.name,
-      objectType: 'table',
-      privileges: ['ALL'],
-      role: user.name,
-      schema: 'public',
-    },
-    opts
-  );
-  const uri = pulumi.interpolate`postgres://${user.name}:${password.result}@${service.metadata.name}:5432/${db.name}`;
-
-  return { uri };
+export function createPostgresUri(dbname: string) {
+  return pulumi.interpolate`postgres://admin:${password.result}@${service.metadata.name}:5432/${dbname}`;
 }
 
 const app = new k8s.apps.v1.StatefulSet(
@@ -111,13 +79,16 @@ const app = new k8s.apps.v1.StatefulSet(
           containers: [
             {
               name: 'postgres',
-              image: 'postgres:12',
+              // image: 'postgres:12',
+              // image: 'paulbouwer/hello-kubernetes:1',
+              image: 'postgres:11',
               ports: [
                 {
                   containerPort: 5432,
                 },
               ],
               volumeMounts: [
+                ...multipleVolumeMounts,
                 {
                   name: 'data',
                   mountPath: '/var/lib/postgresql/data',
@@ -132,6 +103,10 @@ const app = new k8s.apps.v1.StatefulSet(
               ],
               env: [
                 {
+                  name: 'POSTGRES_MULTIPLE_DATABASES',
+                  value: 'supertokens,synapse',
+                },
+                {
                   name: 'PGDATA',
                   value: '/var/lib/postgresql/data/pgdata',
                 },
@@ -139,6 +114,7 @@ const app = new k8s.apps.v1.StatefulSet(
             },
           ],
           volumes: [
+            multipleVolume,
             {
               name: 'data',
               persistentVolumeClaim: {

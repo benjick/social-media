@@ -9,6 +9,7 @@ const websiteDomain =
   process.env.APP_URL ||
   process.env.NEXT_PUBLIC_APP_URL ||
   `http://localhost:${port}`;
+console.log('websiteDomain', websiteDomain);
 const apiBasePath = '/api/auth/';
 
 let appInfo = {

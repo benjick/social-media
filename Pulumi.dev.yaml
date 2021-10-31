@@ -4,7 +4,7 @@ config:
   do:token:
     secure: AAABAMessPwRltBgxTXmA1Womwa7oVWMN4znxL1EZ3SiA9sI8Ell1Qnfxc8BkZRuk1XcsicDSs1z6VqhXtslxwy2HSWMQycpqg/VjgvWmwwNcr6eJ9NFjL36tAwaf/ug
   dumhub:signing-key:
-    secure: AAABAJt5K8FuehOZufK34cyj6wjC1sVluxHUdrgYIiM4
+    secure: AAABAMeFXZ9qSiMhx+xSpFJ6wSqTfd1u1R9zrVCqtr4dRXuPrVRerr7sl9Mkw2/OX5aQGcxKXeNge+CIeMAbpZzR+iunN4TsbMp5k9YkBSEOrGc0UljNlWng
   k8s:domain: molny.se
   k8s:dropletSize: s-1vcpu-2gb
   k8s:nodecount: "1"

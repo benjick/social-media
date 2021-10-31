@@ -1,9 +1,9 @@
 import * as k8s from '@pulumi/kubernetes';
-import { provider } from './cluster';
+import { provider } from '../cluster';
 import {
   volumeMounts as homeserverVolumeMounts,
   volume as homeserverVolume,
-} from './homeserver';
+} from './config';
 
 const dirs = ['/data/media_store', '/data/uploads', '/data/logs'];
 
@@ -58,8 +58,8 @@ const app = new k8s.apps.v1.Deployment(
           containers: [
             {
               name: 'synapse',
-              // image: 'matrixdotorg/synapse:v1.45.1',
-              image: 'paulbouwer/hello-kubernetes:1.8',
+              image: 'matrixdotorg/synapse:v1.45.1',
+              // image: 'paulbouwer/hello-kubernetes:1.8',
               ports: [
                 {
                   containerPort: 8008,

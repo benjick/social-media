@@ -14,6 +14,9 @@ const image = new docker.Image(
     build: {
       context: '../auth',
       cacheFrom: true,
+      env: {
+        NEXT_PUBLIC_APP_URL: 'https://auth.molny.se',
+      },
     },
     imageName: pulumi.interpolate`registry.digitalocean.com/${registry.name}/collo-auth`,
     registry: registryCredentials,
@@ -45,6 +48,10 @@ const deployment = new k8s.apps.v1.Deployment(
                 {
                   name: 'SUPERTOKENS_URI',
                   value: connectionUri,
+                },
+                {
+                  name: 'APP_URL',
+                  value: 'https://auth.molny.se',
                 },
               ],
             },

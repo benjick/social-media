@@ -1,9 +1,9 @@
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
-import { createPostgresDb } from '../postgres';
 import { provider } from '../cluster';
+import { createPostgresUri } from '../postgres/postgres';
 
-const { uri } = createPostgresDb('supertoken');
+const uri = createPostgresUri('supertokens');
 
 const appName = 'supertokens';
 const appLabels = { app: appName };

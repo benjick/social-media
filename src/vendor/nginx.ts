@@ -17,9 +17,8 @@ export const nginx = new k8s.helm.v3.Chart(
     fetchOpts: { repo: 'https://kubernetes.github.io/ingress-nginx' },
     values: {
       controller: {
-        publishService: {
-          enabled: true,
-        },
+        service: { externalTrafficPolicy: 'Local' },
+        publishService: { enabled: true },
       },
     },
   },
@@ -52,7 +51,7 @@ if (domainName) {
     }
   );
 
-  const subdomains = ['www', 'matrix', 'auth'];
+  const subdomains = ['www', 'matrix', 'auth', 'db'];
   subdomains.map((name) => {
     new digitalocean.DnsRecord(`do-${name}-cname`, {
       domain: domain.name,

@@ -4,7 +4,7 @@ import * as digitalocean from '@pulumi/digitalocean';
 import { provider } from './cluster';
 
 export const registry = new digitalocean.ContainerRegistry('molny', {
-  subscriptionTierSlug: 'starter',
+  subscriptionTierSlug: 'basic',
 });
 
 const credentials = new digitalocean.ContainerRegistryDockerCredentials(

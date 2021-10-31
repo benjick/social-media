@@ -6,7 +6,7 @@ import { region } from './config';
 import { kubeconfig } from './cluster';
 import './vendor/nginx';
 import './vendor/cert-manager';
-import './synapse';
+import './synapse/synapse';
 import './auth';
 
 export { kubeconfig };
