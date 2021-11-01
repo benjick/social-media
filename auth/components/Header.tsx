@@ -6,14 +6,18 @@ import { signOut } from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
 import { useSessionContext } from 'supertokens-auth-react/recipe/session';
 import { AuthWrapper } from './AuthWrapper';
 
-const navigation = [
+const _navigation = [
   { name: 'Download', href: '#' },
   { name: 'Help', href: '#' },
   { name: 'Code of conduct', href: '#' },
+  { name: 'Profile', href: '/profile', authed: true },
 ];
 
 export function RealHeader() {
   let { doesSessionExist } = useSessionContext();
+  const navigation = _navigation.filter((item) =>
+    doesSessionExist ? true : !item.authed
+  );
 
   async function logout() {
     await signOut();

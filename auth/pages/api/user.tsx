@@ -2,6 +2,7 @@ import { superTokensNextWrapper } from 'supertokens-node/nextjs';
 import { verifySession } from 'supertokens-node/recipe/session/framework/express';
 import supertokens from 'supertokens-node';
 import { backendConfig } from '../../config/backend';
+import { getPrisma } from '../../prisma';
 
 supertokens.init(backendConfig());
 
@@ -14,10 +15,16 @@ export default async function user(req, res) {
     res
   );
 
-  return res.json({
-    note: 'Fetch any data from your application for authenticated user after using verifySession middleware',
-    userId: req.session.getUserId(),
-    sessionHandle: req.session.getHandle(),
-    userDataInJWT: req.session.getJWTPayload(),
+  const prisma = getPrisma();
+  const id = req.session.getUserId();
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      profile: true,
+    },
   });
+
+  return res.json(user);
 }

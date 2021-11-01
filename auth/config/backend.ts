@@ -3,10 +3,10 @@ import SessionNode from 'supertokens-node/recipe/session';
 import { TypeInput } from 'supertokens-node/lib/build/types';
 import { appInfo } from './config';
 import { usernameCheck } from '../lib/checks';
-import { createPrisma } from '../prisma';
+import { getPrisma } from '../prisma';
 
 export let backendConfig = (): TypeInput => {
-  const prisma = createPrisma();
+  const prisma = getPrisma();
   return {
     framework: 'express',
     supertokens: {

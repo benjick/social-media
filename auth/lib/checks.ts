@@ -1,8 +1,8 @@
-import { createPrisma } from '../prisma';
+import { getPrisma } from '../prisma';
 
 export const usernameCheck = {
   backend: async (username: string) => {
-    const prisma = createPrisma();
+    const prisma = getPrisma();
     if (username.length < 5) {
       return false;
     }

@@ -1,4 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 
-export const createPrisma = () =>
-  new PrismaClient({ log: ['query', 'info', 'warn'] });
+let prisma: PrismaClient;
+
+export const getPrisma = () => {
+  if (!prisma) {
+    prisma = new PrismaClient({ log: ['query', 'info', 'warn'] });
+  }
+  return prisma;
+};

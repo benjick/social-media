@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import ThirdPartyEmailPassword from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
 import dynamic from 'next/dynamic';
@@ -6,6 +6,7 @@ import Session from 'supertokens-node/recipe/session';
 import { Layout } from '../components/Layout';
 import { AuthWrapper } from '../components/AuthWrapper';
 import { useSessionContext } from 'supertokens-auth-react/recipe/session';
+import { User, Profile } from '.prisma/client';
 
 const ThirdPartyEmailPasswordAuthNoSSR = dynamic(
   new Promise((res) =>
@@ -33,20 +34,27 @@ export async function getServerSideProps(context) {
   };
 }
 
-function Profile() {
-  let { userId } = useSessionContext();
-  const user = {
-    handle: userId,
-    imageUrl:
-      'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=320&h=320&q=80',
-  };
-
-  async function fetchUserData() {
+function getUser() {
+  const [user, setUser] = useState<User & { profile: Profile }>();
+  const getUser = async () => {
     const res = await fetch('/api/user');
     if (res.status === 200) {
       const json = await res.json();
-      console.log(json);
+      setUser(json);
     }
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  return user;
+}
+
+function Profile() {
+  const user = getUser();
+
+  if (typeof user === 'undefined') {
+    return null;
   }
 
   return (
@@ -73,25 +81,16 @@ function Profile() {
               <div className="mt-6 flex flex-col lg:flex-row">
                 <div className="flex-grow space-y-6">
                   <div>
-                    <label
-                      htmlFor="username"
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <div className="block text-sm font-medium text-gray-700">
                       Username
-                    </label>
-                    <div className="mt-1 rounded-md shadow-sm flex">
-                      <input
-                        type="text"
-                        name="username"
-                        id="username"
-                        autoComplete="username"
-                        className="text-right focus:ring-sky-500 focus:border-sky-500 flex-grow block w-full min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
-                        value={`@${user.handle}`}
-                        disabled
-                      />
-                      <span className="bg-gray-50 border border-l-0 border-gray-300 rounded-r-md px-3 inline-flex items-center text-gray-500 sm:text-sm">
-                        :socialmedia.com
-                      </span>
+                    </div>
+                    <div
+                      className="bg-gray-50 mt-1 border-solid border-1 border-black py-2 rounded-md shadow-sm flex"
+                      border-gray-300
+                    >
+                      <div className="px-3 inline-flex items-center text-gray-500 sm:text-sm">
+                        @{user.username}:socialmedia.com
+                      </div>
                     </div>
                   </div>
 
@@ -126,16 +125,25 @@ function Profile() {
                   </p>
                   <div className="mt-1 lg:hidden">
                     <div className="flex items-center">
-                      <div
-                        className="flex-shrink-0 inline-block rounded-full overflow-hidden h-12 w-12"
-                        aria-hidden="true"
-                      >
-                        <img
-                          className="rounded-full h-full w-full"
-                          src={user.imageUrl}
-                          alt=""
-                        />
-                      </div>
+                      {user.profile.image ? (
+                        <div
+                          className="flex-shrink-0 inline-block rounded-full overflow-hidden h-12 w-12"
+                          aria-hidden="true"
+                        >
+                          <img
+                            className="rounded-full h-full w-full"
+                            src={user.profile.image}
+                            alt=""
+                          />
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gray-500">
+                          <span className="text-xs font-medium leading-none text-white">
+                            TW
+                          </span>
+                        </span>
+                      )}
+
                       <div className="ml-5 rounded-md shadow-sm">
                         <div className="group relative border border-gray-300 rounded-md py-2 px-3 flex items-center justify-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-sky-500">
                           <label
@@ -157,11 +165,19 @@ function Profile() {
                   </div>
 
                   <div className="hidden relative rounded-full overflow-hidden lg:block">
-                    <img
-                      className="relative rounded-full w-40 h-40"
-                      src={user.imageUrl}
-                      alt=""
-                    />
+                    {user.profile.image ? (
+                      <img
+                        className="relative rounded-full w-40 h-40"
+                        src={user.profile.image}
+                        alt=""
+                      />
+                    ) : (
+                      <span className="inline-flex items-center justify-center h-40 w-40 rounded-full bg-gray-500">
+                        <span className="text-4xl font-medium leading-none text-white">
+                          TW
+                        </span>
+                      </span>
+                    )}
                     <label
                       htmlFor="desktop-user-photo"
                       className="absolute inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center text-sm font-medium text-white opacity-0 hover:opacity-100 focus-within:opacity-100"
@@ -180,65 +196,18 @@ function Profile() {
               </div>
 
               <div className="mt-6 grid grid-cols-12 gap-6">
-                <div className="col-span-12 sm:col-span-6">
-                  <label
-                    htmlFor="first-name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    First name
-                  </label>
-                  <input
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autoComplete="given-name"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-12 sm:col-span-6">
-                  <label
-                    htmlFor="last-name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Last name
-                  </label>
-                  <input
-                    type="text"
-                    name="last-name"
-                    id="last-name"
-                    autoComplete="family-name"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                  />
-                </div>
-
                 <div className="col-span-12">
                   <label
                     htmlFor="url"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    URL
+                    Name
                   </label>
                   <input
                     type="text"
-                    name="url"
-                    id="url"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-12 sm:col-span-6">
-                  <label
-                    htmlFor="company"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    id="company"
-                    autoComplete="organization"
+                    name="name"
+                    id="name"
+                    value={user.profile.name}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                   />
                 </div>
