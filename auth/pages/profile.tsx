@@ -1,57 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
-import ThirdPartyEmailPassword from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
-import dynamic from 'next/dynamic';
+import React from 'react';
 import Session from 'supertokens-node/recipe/session';
 import { Layout } from '../components/Layout';
 import { AuthWrapper } from '../components/AuthWrapper';
-import { useSessionContext } from 'supertokens-auth-react/recipe/session';
-import { User, Profile } from '.prisma/client';
-
-const ThirdPartyEmailPasswordAuthNoSSR = dynamic(
-  new Promise((res) =>
-    res(ThirdPartyEmailPassword.ThirdPartyEmailPasswordAuth)
-  ),
-  { ssr: false }
-);
-
-export async function getServerSideProps(context) {
-  let session;
-  try {
-    session = await Session.getSession(context.req, context.res);
-  } catch (err) {
-    if (err.type === Session.Error.TRY_REFRESH_TOKEN) {
-      return { props: { fromSupertokens: 'needs-refresh' } };
-    } else if (err.type === Session.Error.UNAUTHORISED) {
-      return { props: {} };
-    } else {
-      throw err;
-    }
-  }
-
-  return {
-    props: { userId: session.getUserId() },
-  };
-}
-
-function getUser() {
-  const [user, setUser] = useState<User & { profile: Profile }>();
-  const getUser = async () => {
-    const res = await fetch('/api/user');
-    if (res.status === 200) {
-      const json = await res.json();
-      setUser(json);
-    }
-  };
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  return user;
-}
+import { Profile } from '.prisma/client';
+import { useUser } from '../lib/hooks/useUser';
+import { Avatar } from '../components/Avatar';
 
 function Profile() {
-  const user = getUser();
+  const user = useUser();
 
   if (typeof user === 'undefined') {
     return null;
@@ -137,11 +93,7 @@ function Profile() {
                           />
                         </div>
                       ) : (
-                        <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gray-500">
-                          <span className="text-xs font-medium leading-none text-white">
-                            TW
-                          </span>
-                        </span>
+                        <Avatar name={user.profile.name} size="small" />
                       )}
 
                       <div className="ml-5 rounded-md shadow-sm">
@@ -172,11 +124,7 @@ function Profile() {
                         alt=""
                       />
                     ) : (
-                      <span className="inline-flex items-center justify-center h-40 w-40 rounded-full bg-gray-500">
-                        <span className="text-4xl font-medium leading-none text-white">
-                          TW
-                        </span>
-                      </span>
+                      <Avatar name={user.profile.name} size="big" />
                     )}
                     <label
                       htmlFor="desktop-user-photo"
@@ -221,3 +169,21 @@ function Profile() {
 }
 
 export default AuthWrapper(Profile);
+
+export async function getServerSideProps(context) {
+  let session: Session.SessionContainer | undefined;
+  try {
+    session = await Session.getSession(context.req, context.res);
+  } catch (err) {
+    if (err.type === Session.Error.TRY_REFRESH_TOKEN) {
+      return { props: { fromSupertokens: 'needs-refresh' } };
+    } else if (err.type === Session.Error.UNAUTHORISED) {
+      return { props: {} };
+    } else {
+      throw err;
+    }
+  }
+  return {
+    props: {},
+  };
+}
