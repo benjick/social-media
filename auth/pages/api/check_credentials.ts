@@ -6,7 +6,6 @@ import * as SuperTokens from 'supertokens-node';
 import * as SuperTokensConfig from '../../config/supertokensConfig';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// @ts-ignore
 SuperTokens.init(SuperTokensConfig.backendConfig());
 
 export default async function handler(

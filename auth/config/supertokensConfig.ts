@@ -3,6 +3,7 @@ import SessionNode from 'supertokens-node/recipe/session';
 
 import ThirdPartyEmailPasswordReact from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
 import SessionReact from 'supertokens-auth-react/recipe/session';
+import { TypeInput } from 'supertokens-node/lib/build/types';
 
 const port = process.env.APP_PORT || 3000;
 const websiteDomain =
@@ -19,7 +20,7 @@ let appInfo = {
   apiBasePath,
 };
 
-export let backendConfig = () => {
+export let backendConfig = (): TypeInput => {
   return {
     framework: 'express',
     supertokens: {
@@ -40,7 +41,24 @@ export let backendConfig = () => {
         },
         providers: [],
       }),
-      SessionNode.init(),
+      SessionNode.init({
+        override: {
+          functions: (originalImplementation) => {
+            return {
+              ...originalImplementation,
+              createNewSession: async (input) => {
+                let userId = input.userId;
+                let roles = ['admin', 'inviter']; // TODO: fetch role based on userId
+                input.accessTokenPayload = {
+                  ...input.accessTokenPayload,
+                  roles,
+                };
+                return originalImplementation.createNewSession(input);
+              },
+            };
+          },
+        },
+      }),
     ],
     isInServerlessEnv: true,
   };

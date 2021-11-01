@@ -37,7 +37,7 @@ const blogPosts = [
   },
 ];
 
-export default function Home() {
+function Home() {
   return (
     <Layout>
       <div className="pt-10 bg-gray-900 sm:pt-16 lg:pt-8 lg:pb-14 lg:overflow-hidden">
@@ -152,3 +152,5 @@ export default function Home() {
     </Layout>
   );
 }
+
+export default Home;

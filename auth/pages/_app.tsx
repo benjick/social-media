@@ -10,7 +10,6 @@ import { redirectToAuth } from 'supertokens-auth-react/recipe/thirdpartyemailpas
 if (typeof window !== 'undefined') {
   SuperTokensReact.init(SuperTokensConfig.frontendConfig());
 } else {
-  // @ts-ignore
   SuperTokensNode.init(SuperTokensConfig.backendConfig());
 }
 

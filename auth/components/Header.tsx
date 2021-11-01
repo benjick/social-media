@@ -2,6 +2,9 @@ import React from 'react';
 import { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
+import { signOut } from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
+import { useSessionContext } from 'supertokens-auth-react/recipe/session';
+import { AuthWrapper } from './AuthWrapper';
 
 const navigation = [
   { name: 'Download', href: '#' },
@@ -9,7 +12,14 @@ const navigation = [
   { name: 'Code of conduct', href: '#' },
 ];
 
-export function Header() {
+export function RealHeader() {
+  let { doesSessionExist } = useSessionContext();
+
+  async function logout() {
+    await signOut();
+    window.location.href = '/';
+  }
+
   return (
     <Popover as="header" className="relative z-50">
       <div className="bg-gray-900 pt-6">
@@ -47,12 +57,21 @@ export function Header() {
             </div>
           </div>
           <div className="hidden md:flex md:items-center md:space-x-6">
-            <a
-              href="/auth"
-              className="text-base font-medium text-white hover:text-gray-300"
-            >
-              Login
-            </a>
+            {doesSessionExist ? (
+              <button
+                onClick={logout}
+                className="text-base font-medium text-white hover:text-gray-300"
+              >
+                Logout
+              </button>
+            ) : (
+              <a
+                href="/auth"
+                className="text-base font-medium text-white hover:text-gray-300"
+              >
+                Login
+              </a>
+            )}
             <a
               href="#"
               className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700"
@@ -114,9 +133,18 @@ export function Header() {
               </div>
               <div className="mt-6 px-5">
                 <p className="text-center text-base font-medium text-gray-500">
-                  <a href="/auth" className="text-gray-900 hover:underline">
-                    Login
-                  </a>
+                  {doesSessionExist ? (
+                    <button
+                      onClick={logout}
+                      className="text-gray-900 hover:underline"
+                    >
+                      Logout
+                    </button>
+                  ) : (
+                    <a href="/auth" className="text-gray-900 hover:underline">
+                      Login
+                    </a>
+                  )}
                 </p>
               </div>
             </div>
@@ -126,3 +154,5 @@ export function Header() {
     </Popover>
   );
 }
+
+export const Header = AuthWrapper(RealHeader, { requireAuth: false });

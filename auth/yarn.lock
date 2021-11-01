@@ -3453,10 +3453,10 @@ stylis@^4.0.10, stylis@^4.0.6:
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.0.10.tgz#446512d1097197ab3f02fb3c258358c3f7a14240"
   integrity sha512-m3k+dk7QeJw660eIKRRn3xPF6uuvHs/FFzjX3HQ5ove0qYsiygoAhwn5a3IYKaZPo5LrYD0rfVmtv1gNY1uYwg==
 
-supertokens-auth-react@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/supertokens-auth-react/-/supertokens-auth-react-0.16.0.tgz#910e05486836c55b3f749cc892fbbc374fd649f7"
-  integrity sha512-mJCiF3hz6NuT3e8W8S48kFRsZUNVQo336tdY4i6UIbyBOYS20Oimysy8hvXT4/AXpslK8E065GlrFo5GilGJHw==
+supertokens-auth-react@^0.17.1:
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/supertokens-auth-react/-/supertokens-auth-react-0.17.1.tgz#12aca6518b422f55867a5faa496d9178d1a92a2e"
+  integrity sha512-CImmRVJOPnRI/dQ34tKt7cRpn/XhXkWz2XHesKDzB5xUeuFV2Kvz+AoPj1sY8XiXe1HjkS8hayzGf1a5kzxA8Q==
   dependencies:
     "@emotion/cache" "^11.1.0"
     "@emotion/react" "^11.4.1"
@@ -3464,12 +3464,12 @@ supertokens-auth-react@^0.16.0:
     chroma-js "^2.1.2"
     prop-types "^15.7.2"
     react-shadow "^19.0.2"
-    supertokens-website "^9.0.1"
+    supertokens-website "^10.0.0"
 
-supertokens-node@^7.3.0:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/supertokens-node/-/supertokens-node-7.3.1.tgz#13dd656c50baac28046ae0938ecc38b1cabe3130"
-  integrity sha512-6Oo9ledsEomwMMiAQNJFSAV4MsA3TpxehnxzAPtoMeNblj7BjpRqmFIsNYEbwM7G13jnVMLUgwEcIC7Mw13/nQ==
+supertokens-node@^8.0.4:
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/supertokens-node/-/supertokens-node-8.0.4.tgz#979919cd1bd4ee906817a67a2ceff696ef094f0e"
+  integrity sha512-xRzVYi3UrhZ14rdSD9oy8EOYGbFy8QB2tikOurgRDsq8N3kmOEMxt4TyuEVhmOnq1y1fbpNHQdmAYIq0zOA8Og==
   dependencies:
     axios "0.21.4"
     body-parser "1.19.0"
@@ -3479,10 +3479,10 @@ supertokens-node@^7.3.0:
     jsonwebtoken "8.5.1"
     psl "1.8.0"
 
-supertokens-website@^9.0.1:
-  version "9.0.4"
-  resolved "https://registry.yarnpkg.com/supertokens-website/-/supertokens-website-9.0.4.tgz#94bd46bbcf9bc6e1d5d582552591d158ff499fbe"
-  integrity sha512-v0y4+Yw1epW8a0EiZzXrcuGjsaaRVn31MhKVMTnBvuW9Y6eXP6i32ssLfa54yEiA86fY/JQQadvtQ93oOc2Tog==
+supertokens-website@^10.0.0:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/supertokens-website/-/supertokens-website-10.0.1.tgz#9465352a745dac4859f415cbb15e2e453fe0b33e"
+  integrity sha512-/DehtpNMHBBf/BxD8EIs3QptL1as5CDR5u5Tl239o+IQxvB4t2EL2ruL6Jgr6fGwyFO73e+kCObkvxerxFWtqA==
   dependencies:
     browser-tabs-lock "^1.2.14"
 
