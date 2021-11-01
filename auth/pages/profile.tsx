@@ -1,10 +1,11 @@
 import React from 'react';
-import Session from 'supertokens-node/recipe/session';
+
 import { Layout } from '../components/Layout';
 import { AuthWrapper } from '../components/AuthWrapper';
 import { Profile } from '.prisma/client';
 import { useUser } from '../lib/hooks/useUser';
 import { Avatar } from '../components/Avatar';
+import { createAuthServerSideProps } from '../lib/auth';
 
 function Profile() {
   const user = useUser();
@@ -170,20 +171,4 @@ function Profile() {
 
 export default AuthWrapper(Profile);
 
-export async function getServerSideProps(context) {
-  let session: Session.SessionContainer | undefined;
-  try {
-    session = await Session.getSession(context.req, context.res);
-  } catch (err) {
-    if (err.type === Session.Error.TRY_REFRESH_TOKEN) {
-      return { props: { fromSupertokens: 'needs-refresh' } };
-    } else if (err.type === Session.Error.UNAUTHORISED) {
-      return { props: {} };
-    } else {
-      throw err;
-    }
-  }
-  return {
-    props: {},
-  };
-}
+export const getServerSideProps = createAuthServerSideProps();
