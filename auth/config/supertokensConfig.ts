@@ -29,12 +29,33 @@ export let backendConfig = (): TypeInput => {
     appInfo,
     recipeList: [
       ThirdPartyEmailPasswordNode.init({
+        signUpFeature: {
+          formFields: [{ id: 'username' }, { id: 'name' }],
+        },
         override: {
           apis: (originalImplementation) => {
             return {
               ...originalImplementation,
               // emailPasswordSignInPOST: undefined,
-              emailPasswordSignUpPOST: undefined,
+              emailPasswordSignUpPOST: async (input) => {
+                if (
+                  originalImplementation.emailPasswordSignUpPOST === undefined
+                ) {
+                  throw Error('Should never come here');
+                }
+                // First we call the original implementation
+                let response =
+                  await originalImplementation.emailPasswordSignUpPOST(input);
+                // If sign up was successful
+                if (response.status === 'OK') {
+                  // We can get the form fields from the input like this
+                  let formFields = input.formFields;
+                  console.log('formFields', formFields);
+                  let user = response.user;
+                  // some post sign up logic
+                }
+                return response;
+              },
               thirdPartySignInUpPOST: undefined,
             };
           },
@@ -69,6 +90,7 @@ export let frontendConfig = () => {
     appInfo,
     recipeList: [
       ThirdPartyEmailPasswordReact.init({
+        useShadowDom: false,
         getRedirectionURL: async (context) => {
           if (context.action === 'SUCCESS') {
             if (context.redirectToPath !== undefined) {
@@ -83,6 +105,20 @@ export let frontendConfig = () => {
           mode: 'REQUIRED',
         },
         signInAndUpFeature: {
+          signUpForm: {
+            formFields: [
+              {
+                id: 'username',
+                label: 'Username',
+                placeholder: 'Pick a username',
+              },
+              {
+                id: 'name',
+                label: 'Your name',
+                placeholder: 'First name and last name',
+              },
+            ],
+          },
           providers: [],
         },
       }),
