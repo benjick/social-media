@@ -2,9 +2,9 @@ import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 
-export function Layout({ children }) {
+export function Layout({ children, bgColor = 'bg-white' }) {
   return (
-    <div className="bg-white">
+    <div className={bgColor}>
       <Header />
       <div className="relative overflow-hidden">
         <main>{children}</main>
