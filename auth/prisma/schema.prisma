@@ -23,4 +23,5 @@ model User {
   email    String   @unique
   username String   @unique
   profile  Profile?
+  approved Boolean  @default(false)
 }
