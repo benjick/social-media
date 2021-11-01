@@ -7,9 +7,11 @@ services:
       - 5432:5432
     #    volumes:
     #      - my_dbdata:/var/lib/postgresql/data
+    volumes:
+      - ../src/postgres/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/multiple.sh
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
-      POSTGRES_DB: supertokens
+      POSTGRES_MULTIPLE_DATABASES: supertokens,app
 
   supertokens:
     image: registry.supertokens.io/supertokens/supertokens-postgresql
