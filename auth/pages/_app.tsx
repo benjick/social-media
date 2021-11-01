@@ -2,15 +2,16 @@ import 'tailwindcss/tailwind.css';
 import React from 'react';
 import { useEffect } from 'react';
 import SuperTokensReact from 'supertokens-auth-react';
-import * as SuperTokensConfig from '../config/supertokensConfig';
 import Session from 'supertokens-auth-react/recipe/session';
 import SuperTokensNode from 'supertokens-node';
 import { redirectToAuth } from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
+import { backendConfig } from '../config/backend';
+import { frontendConfig } from '../config/frontend';
 
 if (typeof window !== 'undefined') {
-  SuperTokensReact.init(SuperTokensConfig.frontendConfig());
+  SuperTokensReact.init(frontendConfig());
 } else {
-  SuperTokensNode.init(SuperTokensConfig.backendConfig());
+  SuperTokensNode.init(backendConfig());
 }
 
 function MyApp({ Component, pageProps }) {

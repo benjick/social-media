@@ -3,10 +3,10 @@
 import ThirdPartyEmailPasswordNode from 'supertokens-node/recipe/thirdpartyemailpassword';
 import * as SuperTokens from 'supertokens-node';
 
-import * as SuperTokensConfig from '../../config/supertokensConfig';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { backendConfig } from '../../config/backend';
 
-SuperTokens.init(SuperTokensConfig.backendConfig());
+SuperTokens.init(backendConfig());
 
 export default async function handler(
   req: NextApiRequest,

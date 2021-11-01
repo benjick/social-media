@@ -1,26 +1,12 @@
 import ThirdPartyEmailPasswordNode from 'supertokens-node/recipe/thirdpartyemailpassword';
 import SessionNode from 'supertokens-node/recipe/session';
-
-import ThirdPartyEmailPasswordReact from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
-import SessionReact from 'supertokens-auth-react/recipe/session';
 import { TypeInput } from 'supertokens-node/lib/build/types';
-
-const port = process.env.APP_PORT || 3000;
-const websiteDomain =
-  process.env.APP_URL ||
-  process.env.NEXT_PUBLIC_APP_URL ||
-  `http://localhost:${port}`;
-console.log('websiteDomain', websiteDomain);
-const apiBasePath = '/api/auth/';
-
-let appInfo = {
-  appName: 'SuperTokens Demo App',
-  websiteDomain,
-  apiDomain: websiteDomain,
-  apiBasePath,
-};
+import { appInfo } from './config';
+import { usernameCheck } from '../lib/checks';
+import { createPrisma } from '../prisma';
 
 export let backendConfig = (): TypeInput => {
+  const prisma = createPrisma();
   return {
     framework: 'express',
     supertokens: {
@@ -30,7 +16,21 @@ export let backendConfig = (): TypeInput => {
     recipeList: [
       ThirdPartyEmailPasswordNode.init({
         signUpFeature: {
-          formFields: [{ id: 'username' }, { id: 'name' }],
+          formFields: [
+            {
+              id: 'username',
+              validate: async (username: string) => {
+                if (username.length < 5) {
+                  return 'Username must be at least 5 characters';
+                }
+                const exists = await usernameCheck.backend(username);
+                if (exists) {
+                  return 'Username already taken';
+                }
+              },
+            },
+            { id: 'name' },
+          ],
         },
         override: {
           apis: (originalImplementation) => {
@@ -48,11 +48,27 @@ export let backendConfig = (): TypeInput => {
                   await originalImplementation.emailPasswordSignUpPOST(input);
                 // If sign up was successful
                 if (response.status === 'OK') {
-                  // We can get the form fields from the input like this
-                  let formFields = input.formFields;
-                  console.log('formFields', formFields);
-                  let user = response.user;
-                  // some post sign up logic
+                  const get = (id: string) =>
+                    input.formFields.find((f) => f.id === id)!.value;
+
+                  const email = get('email');
+                  const username = get('username');
+                  const name = get('name');
+
+                  await prisma.user.create({
+                    data: {
+                      id: response.user.id,
+                      email,
+                      username,
+                    },
+                  });
+
+                  await prisma.profile.create({
+                    data: {
+                      name,
+                      userId: response.user.id,
+                    },
+                  });
                 }
                 return response;
               },
@@ -82,47 +98,5 @@ export let backendConfig = (): TypeInput => {
       }),
     ],
     isInServerlessEnv: true,
-  };
-};
-
-export let frontendConfig = () => {
-  return {
-    appInfo,
-    recipeList: [
-      ThirdPartyEmailPasswordReact.init({
-        useShadowDom: false,
-        getRedirectionURL: async (context) => {
-          if (context.action === 'SUCCESS') {
-            if (context.redirectToPath !== undefined) {
-              // we are navigating back to where the user was before they authenticated
-              return context.redirectToPath;
-            }
-            return '/profile';
-          }
-          return undefined;
-        },
-        emailVerificationFeature: {
-          mode: 'REQUIRED',
-        },
-        signInAndUpFeature: {
-          signUpForm: {
-            formFields: [
-              {
-                id: 'username',
-                label: 'Username',
-                placeholder: 'Pick a username',
-              },
-              {
-                id: 'name',
-                label: 'Your name',
-                placeholder: 'First name and last name',
-              },
-            ],
-          },
-          providers: [],
-        },
-      }),
-      SessionReact.init(),
-    ],
   };
 };
